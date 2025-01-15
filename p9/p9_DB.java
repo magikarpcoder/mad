@@ -1,4 +1,4 @@
-package com.example.meet;
+package com.example.now;
 
 import android.content.ContentValues;
 import android.content.Context;
