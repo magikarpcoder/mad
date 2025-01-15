@@ -1,6 +1,4 @@
-package com.example.medicinedb;
-import androidx.appcompat.app.AppCompatActivity;
-import android.annotation.SuppressLint;
+package com.example.medicinereminder;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -11,77 +9,92 @@ import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-public class MainActivity extends AppCompatActivity {
- EditText medicineName,medicineDate;
- TextView textViewMed;
- Button insertButton, fetchButton;
- Spinner dayTimeSpinner;
- Switch swtch;
- DbConnection dbConnection;
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
 
- @Override
- protected void onCreate(Bundle savedInstanceState) {
- super.onCreate(savedInstanceState);
- setContentView(R.layout.activity_main);
- dbConnection = new DbConnection(this);
- textViewMed = findViewById(R.id.txtViewMed);
- medicineName = findViewById(R.id.edtTxtMed);
- medicineDate = findViewById(R.id.edtTxtDate);
- insertButton = findViewById(R.id.btnInsert);
- fetchButton = findViewById(R.id.btnFetch);
- fetchButton.setVisibility(View.INVISIBLE);
- dayTimeSpinner = findViewById(R.id.spinner);
- swtch = findViewById(R.id.switcher);
- swtch.setOnCheckedChangeListener(new 
-CompoundButton.OnCheckedChangeListener() {
- @Override
- public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
- if(!isChecked){
- fetchButton.setVisibility(View.INVISIBLE);
- insertButton.setVisibility(View.VISIBLE);
- medicineName.setVisibility(View.VISIBLE);
- textViewMed.setVisibility(View.VISIBLE);
- }
- else{
- medicineName.setVisibility(View.INVISIBLE);
- insertButton.setVisibility(View.INVISIBLE);
- textViewMed.setVisibility(View.INVISIBLE);
- fetchButton.setVisibility(View.VISIBLE);
- }
- }
- });
- insertButton.setOnClickListener(new View.OnClickListener() {
- @Override
- public void onClick(View view) {
- String name = medicineName.getText().toString();
- String date = medicineDate.getText().toString();
- String time = dayTimeSpinner.getSelectedItem().toString();
- boolean insert = dbConnection.insertValues(name,date,time);
- if(insert==true){
- Toast.makeText(getApplicationContext(),"Data inserted Successfully",
-Toast.LENGTH_SHORT).show();
- medicineName.setText(null);
- medicineDate.setText(null);
- else
- Toast.makeText(getApplicationContext(), "Data insertion unsuccessful",
-Toast.LENGTH_SHORT).show();
- }
- });
- fetchButton.setOnClickListener(new View.OnClickListener() {
- @Override
- public void onClick(View view) {
- String date = medicineDate.getText().toString();
- String time = dayTimeSpinner.getSelectedItem().toString();
- String med = "";
- Cursor cu = dbConnection.RetrieveData(date, time);
- cu.moveToFirst();
- do{
- med = med+
-(String.valueOf(cu.getString(cu.getColumnIndex("medicineName"))));
- med+="\n";
- }while (cu.moveToNext());
- Toast.makeText(getApplicationContext(), med, Toast.LENGTH_LONG).show();
- }
- });
- }
+
+public class MainActivity extends AppCompatActivity {
+    EditText medname,meddate;
+    Button insert,fetch;
+    Spinner day;
+    Switch switch1;
+    TextView medtxt;
+    DatabaseConnection dbconnection;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        medname=(EditText)findViewById(R.id.medicinename);
+        meddate=(EditText)findViewById(R.id.date);
+        insert=(Button)findViewById(R.id.insert);
+        fetch=(Button)findViewById(R.id.fetch);
+        day=(Spinner)findViewById(R.id.spinner);
+        switch1=(Switch)findViewById(R.id.switch1);
+        medtxt=(TextView)findViewById(R.id.medtext);
+        dbconnection=new DatabaseConnection(this);
+
+        fetch.setVisibility(View.INVISIBLE);
+        switch1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if(!b)
+                {
+                    fetch.setVisibility(View.INVISIBLE);
+                    insert.setVisibility(View.VISIBLE);
+                    medname.setVisibility(View.VISIBLE);
+                    medtxt.setVisibility(View.VISIBLE);
+                }
+                else{
+                    fetch.setVisibility(View.VISIBLE);
+                    insert.setVisibility(View.INVISIBLE);
+                    medname.setVisibility(View.INVISIBLE);
+                    medtxt.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+
+        insert.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String name=medname.getText().toString();
+                String date=meddate.getText().toString();
+                String time=day.getSelectedItem().toString();
+                boolean insert=dbconnection.insertvalues(name,date,time);
+                if(insert==true)
+                {
+                    Toast.makeText(getApplicationContext(), "Data Inserted", Toast.LENGTH_LONG).show();
+                    medname.setText(" ");
+                    meddate.setText(" ");
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "Data Not Inserted", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        fetch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String date=meddate.getText().toString();
+                String time=day.getSelectedItem().toString();
+                String med="";
+                Cursor c=dbconnection.FetchData(date,time);
+                if(c.moveToFirst()) {
+                    do {
+                        med += (String.valueOf(c.getString(c.getColumnIndexOrThrow("MedicineName"))));
+                        med += "\n";
+                    } while (c.moveToNext());
+                    Toast.makeText(getApplicationContext(), med, Toast.LENGTH_LONG).show();
+                }
+                else
+                    Toast.makeText(getApplicationContext(), "No Entries in Database", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+
 }
