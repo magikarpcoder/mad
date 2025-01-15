@@ -1,4 +1,4 @@
-package com.example.meet;
+package com.example.now;
 
 import android.app.DatePickerDialog;
 import android.database.Cursor;
@@ -16,14 +16,14 @@ public class MainActivity extends AppCompatActivity {
     private Button addMeetingButton, viewMeetingsButton;
     private EditText meetingDateInput, meetingTimeInput, meetingAgendaInput, filterDateInput;
     private TextView meetingsList;
-    private DataBaseConn db;
+    private com.example.now.DataBaseConn db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        db = new DataBaseConn(this);
+        db = new com.example.now.DataBaseConn(this);
 
         // Initialize layout elements
         container = findViewById(R.id.container);
